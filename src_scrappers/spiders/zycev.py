@@ -17,7 +17,7 @@ class ZaycevSpider(scrapy.Spider):
         #     callback=self.parse_song
         # )
         yield scrapy.http.Request(
-            url='http://zaycev.net/genres/pop/index_7036.html',
+            url='http://zaycev.net/genres/pop/index_7035.html',
             callback=self.parse_genre
         )
 

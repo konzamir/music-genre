@@ -1,1 +1,5 @@
 scrapy
+mysql
+sqlalchemy
+alembic
+python-dotenv
