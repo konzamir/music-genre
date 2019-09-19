@@ -1,48 +1,72 @@
-# -*- coding: utf-8 -*-
 import scrapy
 
-from items import MusicLink
+from items import MusicLink, ParsedUrl
+
+from glob import glob
 
 
 class ZaycevSpider(scrapy.Spider):
     name = 'zaycev'
 
     def start_requests(self):
-        # yield scrapy.http.Request(
-        #     url='https://zaycev.net/genres/index.html',
-        #     callback=self.parse
-        # )
-        # yield scrapy.http.Request(
-        #     url='https://zaycev.net/pages/45824/4582412.shtml',
-        #     callback=self.parse_song
-        # )
-        yield scrapy.http.Request(
-            url='http://zaycev.net/genres/pop/index_7035.html',
-            callback=self.parse_genre
-        )
+        logs = glob('./logs/*.*')
+        paths = []
+        is_valid = True
+
+        for path in logs:
+            if path.find('.gitignore') == -1:
+                with open(path, 'r') as file:
+                    data = file.readline()
+                    if not data:
+                        is_valid = False
+                    paths.append(data)
+
+        if is_valid and len(paths) == 16:
+            for url in paths:
+                yield scrapy.http.Request(
+                    url=url,
+                    callback=self.parse_genre
+                )
+        else:
+            yield scrapy.http.Request(
+                url='https://zaycev.net/genres/index.html',
+                callback=self.parse
+            )
+
+    def _get_genre(self, url):
+        genre_start_pos = url.find('genres') + len('genres') + 1
+        genre_end_pos = url.find('/', genre_start_pos)
+        genre = url[genre_start_pos:genre_end_pos]
+
+        return genre
 
     def parse(self, response):
         genres = response.xpath(
             '//ul[contains(@class, "genre__filter")]/li/a')
+        pages = []
+
         for genre in genres:
             genre_url = genre.xpath('./@href').get()
-            genre_text = genre.xpath('./text()').get('')
-
             if genre_url:
                 url = response.urljoin(genre_url)
-                yield scrapy.http.Request(
-                    url=url,
-                    meta={
-                        'genre': genre_text
-                    },
-                    callback=self.parse_genre
-                )
+                genre = self._get_genre(url)
+
+                item = ParsedUrl()
+                item['url'] = url
+                item['genre'] = genre
+
+                pages.append(url)
+                yield item
+
+        for url in pages:
+            yield scrapy.http.Request(
+                url=url,
+                callback=self.parse_genre
+            )
 
     def parse_genre(self, response):
         url = response.url
-        genre_start_pos = url.find('genres') + len('genres') + 1
-        genre_end_pos = url.find('/', genre_start_pos)
-        genre = url[genre_start_pos:genre_end_pos]
+        genre = self._get_genre(url)
 
         url_next_page = response.xpath(
             '//a[contains(@class, "pager__item_last")]/@href').get()
@@ -59,6 +83,11 @@ class ZaycevSpider(scrapy.Spider):
                 yield req
         except TypeError:
             self.logger.info('Music urls from page were fetched!')
+
+        item = ParsedUrl()
+        item['url'] = response.url
+        item['genre'] = genre
+        yield item
 
     def parse_music_list(self, response, genre):
         music_list = response.xpath(
@@ -77,11 +106,3 @@ class ZaycevSpider(scrapy.Spider):
                 item['link'] = music_url
                 item['genre'] = genre
                 yield item
-
-                # yield scrapy.http.Request(
-                #     url=music_url,
-                #     callback=self.parse_song,
-                #     meta={
-                #         'genre': genre
-                #     }
-                # )

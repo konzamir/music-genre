@@ -11,3 +11,8 @@ class Music(scrapy.Item):
 class MusicLink(scrapy.Item):
     genre = scrapy.Field()
     link = scrapy.Field()
+
+
+class ParsedUrl(scrapy.Item):
+    url = scrapy.Field()
+    genre = scrapy.Field()
