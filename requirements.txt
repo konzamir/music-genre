@@ -12,3 +12,6 @@ h5py
 requests
 tensorflow==2.0.0-rc1
 youtube-dl
+
+pylint
+autopep8

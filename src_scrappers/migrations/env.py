@@ -43,17 +43,6 @@ def run_migrations_offline():
     Calls to context.execute() here emit the given string to the
     script output.
     """
-    # url = config.get_main_option("sqlalchemy.url")
-
-    # try:
-    #     context.configure(
-    #         url=DB_URL, target_metadata=target_metadata, literal_binds=True
-    #     )
-    # except OperationalError:
-
-    print('*' * 100)
-    print(db_url)
-    print('*' * 100)
 
     context.configure(
         url=db_url, target_metadata=target_metadata, literal_binds=True
@@ -68,18 +57,6 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    # connectable = engine_from_config(
-    #     config.get_section(config.config_ini_section),
-    #     prefix="sqlalchemy.",
-    #     poolclass=pool.NullPool,
-    # )
-    # try:
-    #     connectable = create_engine(DB_URL)
-    # except OperationalError:
-
-    print('*' * 100)
-    print(db_url)
-    print('*' * 100)
     connectable = create_engine(db_url)
 
     with connectable.connect() as connection:
