@@ -1,14 +1,22 @@
-# -*- coding: utf-8 -*-
 import scrapy
 
 from items import Music
 from handlers import DBHandler
+import time
 
 
 class ZaycevMusicSpider(scrapy.Spider):
     name = 'zaycev_music'
+
     offset = 0
-    pack_limit = 50
+    pack_limit = 5
+    sleep_time = 1
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(ZaycevMusicSpider, cls).from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider.spider_idle, signal=scrapy.signals.spider_idle)
+        return spider
 
     def _get_data(self):
         data = DBHandler.get_data_from_table(
@@ -17,11 +25,7 @@ class ZaycevMusicSpider(scrapy.Spider):
                 'status': ['is', 'NULL', 'or', 'status', '=', '0']
             },
             limit=self.pack_limit,
-            offset=self.offset
         )
-
-        self.offset += self.pack_limit
-
         return data
 
     def start_requests(self):
@@ -73,5 +77,11 @@ class ZaycevMusicSpider(scrapy.Spider):
         music_item['id'] = response.meta.get('id')
         yield music_item
 
-        # for req in self.start_urls():
-        #     yield req
+    def spider_idle(self, *a, **kw):
+        self.logger.info('=' * 50)
+        self.logger.info(f'Finished pack! Sleep for {self.sleep_time} sec...')
+        self.logger.info('=' * 50)
+        time.sleep(self.sleep_time)
+
+        for req in self.start_requests():
+            self.crawler.engine.crawl(req, spider=self)
