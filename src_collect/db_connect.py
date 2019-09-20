@@ -39,6 +39,8 @@ class DBConn:
             }
         values = []
         for k in where.keys():
+            if str_d:
+                str_d += ' AND '
             if isinstance(where[k], list):
                 cases = ' '.join([f'{x}' for x in where[k]])
                 str_d += f' {k} {cases} '
