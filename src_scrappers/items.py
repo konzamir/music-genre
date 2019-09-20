@@ -2,10 +2,10 @@ import scrapy
 
 
 class Music(scrapy.Item):
-    link = scrapy.Field()
+    download_link = scrapy.Field()
     duration = scrapy.Field()
-    title = scrapy.Field()
-    genre = scrapy.Field()
+    name = scrapy.Field()
+    id = scrapy.Field()
 
 
 class MusicLink(scrapy.Item):
