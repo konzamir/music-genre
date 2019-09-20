@@ -54,3 +54,5 @@ DB_DRIVER = os.getenv("DB_DRIVER")
 
 DB_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASS}@"\
     f"{DB_HOST}:{'3306'}/{DB_NAME}"
+
+PACK_LIMIT = os.getenv("PACK_LIMIT")

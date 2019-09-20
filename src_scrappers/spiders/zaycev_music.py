@@ -8,8 +8,6 @@ import time
 class ZaycevMusicSpider(scrapy.Spider):
     name = 'zaycev_music'
 
-    offset = 0
-    pack_limit = 5
     sleep_time = 1
 
     @classmethod
@@ -24,7 +22,7 @@ class ZaycevMusicSpider(scrapy.Spider):
             where={
                 'status': ['is', 'NULL', 'or', 'status', '=', '0']
             },
-            limit=self.pack_limit,
+            limit=int(self.settings.get('PACK_LIMIT', 50))
         )
         return data
 
