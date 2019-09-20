@@ -1,17 +1,27 @@
 import os
 import requests
+import time
 
 
 class FetchData:
+
     @classmethod
     def _get_data(cls, url):
         print('+' * 50)
         print(f'Downloading link: {url}...')
+        time.sleep(3)
         r = requests.get(url)
-
         print(f'Finished with code {r.status_code}!')
-        print('+' * 50)
 
+        if r.status_code == 429:
+            print('Sleep for 15 min...')
+            time.sleep(15 * 60)
+            r = requests.get(url)
+            print(f'Finished with code {r.status_code}!')
+            if r.status_code > 299:
+                exit(0)
+
+        print('+' * 50)
         return r.content
 
     @classmethod
