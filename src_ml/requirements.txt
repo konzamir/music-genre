@@ -1,0 +1,19 @@
+cmake
+
+tensorflow-gpu
+keras
+setuptools
+matplotlib
+numpy
+pandas
+jupyter
+scikit-learn
+h5py
+requests
+# tensorflow==2.0.0-rc1
+tensorflow-io
+youtube-dl
+pydub
+
+pylint
+autopep8
