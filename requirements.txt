@@ -10,7 +10,7 @@ jupyter
 scikit-learn
 h5py
 requests
-tensorflow==2.0.0-rc1
+tensorflow==2.5.0rc0
 youtube-dl
 
 pylint
